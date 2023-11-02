@@ -22,12 +22,18 @@ contract FundMe {
 
     address public immutable owner;
 
-    constructor() {
+    AggregatorV3Interface public priceFeed;
+
+    constructor(address priceFeedAddr) {
         owner = msg.sender;
+        priceFeed = AggregatorV3Interface(priceFeedAddr);
     }
 
     function fund() public payable {
-        require(msg.value.getConversionRate() > minUSD, "Didnot send enough");
+        require(
+            msg.value.getConversionRate(priceFeed) > minUSD,
+            "Didnot send enough"
+        );
         //msg.value is send as 1st parameter to getConversionRate()
         //if 2nd param present send inside bracket
 
