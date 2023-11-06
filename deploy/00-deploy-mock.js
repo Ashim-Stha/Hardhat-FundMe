@@ -22,6 +22,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     });
 
     log("Mocks deployed");
+    log("------------------------------");
   }
 };
 
