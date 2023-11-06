@@ -1,7 +1,12 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-deploy");
+require("dotenv").config();
 
-const acc = "bb57886497e3d955e333f73295a1473f7a6653a4d190c216b4d479bd43350385";
+const surl = process.env.RPC_URL_ALCHEMY || "https://eth-sepolia";
+const pkey = process.env.PRIVATE_KEY || "0xkey";
+const api = process.env.ETHERSCAN_API_KEY || "key";
+const COINMARKETCAP_API = process.env.COINMARKETCAP_API || "key";
+
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
@@ -9,14 +14,11 @@ module.exports = {
   },
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {
-      chainId: 31337,
-      // gasPrice: 130000000000,
-    },
     sepolia: {
-      url: "https://eth-sepolia.g.alchemy.com/v2/B8hivM5MpYmrXNZ0YKbHUJ-st8ywx2Tn",
-      accounts: [acc],
+      url: surl,
+      accounts: [pkey],
       chainId: 11155111,
+      blockConfirmations: 6,
     },
   },
   namedAccounts: {
@@ -24,5 +26,15 @@ module.exports = {
       default: 0,
       1: 0,
     },
+  },
+  etherscan: {
+    apiKey: api,
+  },
+  gasReporter: {
+    enabled: false,
+    noColors: true,
+    outputFile: "gas-report.txt",
+    currency: "USD",
+    coinmarketcap: COINMARKETCAP_API,
   },
 };

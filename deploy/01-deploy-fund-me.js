@@ -8,6 +8,8 @@ const {
   developmentChains,
 } = require("../helper-hardhat-config");
 
+const { verify } = require("../utils/verify");
+
 // module.exports.default = deployFunc;
 
 // module.exports = async (hre) => { //hre=hardhat runtime environment
@@ -32,12 +34,21 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   //what happens when we want to change chains
   //when going for localhost or hardhat network we use mock
+  const args = [ethUsdPriceFeedAddr];
 
   const fundMe = await deploy("FundMe", {
     from: deployer,
-    args: [ethUsdPriceFeedAddr], //put pricefeed address,
+    args: args, //put pricefeed address,
     log: true,
+    waitConfirmations: network.config.blockConfirmations || 1,
   });
+
+  if (
+    !developmentChains.includes(network.name) &&
+    process.env.ETHERSCAN_API_KEY
+  ) {
+    await verify(fundMe.address, args);
+  }
 };
 
 module.exports.tags = ["all", "fundme"];
