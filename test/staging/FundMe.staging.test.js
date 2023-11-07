@@ -21,7 +21,7 @@ developmentChains.includes(network.name)
         );
       });
 
-      it("allows people to fud and withdraw", async function () {
+      it("allows people to fund and withdraw", async function () {
         await fundMe.fund({ value: sendValue });
         await fundMe.withdraw();
 
