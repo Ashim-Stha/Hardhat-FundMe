@@ -1,26 +1,56 @@
-const { assert } = require("chai");
-const { deployments, ethers, getNamedAccounts } = require("hardhat");
-const {
-  isCallTrace,
-} = require("hardhat/internal/hardhat-network/stack-traces/message-trace");
-describe("FundMe", async function () {
-  let fundMe;
-  let deployer;
-  let mockV3Aggregator;
-  beforeEach(async function () {
-    // const accounts = await ethers.getSigners();
-    // const accZero = accounts[0];
+const { assert, expect } = require("chai");
+const { ethers, getNamedAccounts } = require("hardhat");
 
-    deployer = (await getNamedAccounts()).deployer;
-    await deployments.fixture(["all"]); //deploys all files inside deploy dir
-    fundMe = await ethers.getContract("FundMe", deployer);
-    mockV3Aggregator = await ethers.getContract("MockV3Aggregator", deployer);
+describe("FundMe", () => {
+  let fundMe, deployer, mockV3Aggregator, funder;
+  const sendValue = ethers.parseEther("1"); //1eth
+
+  beforeEach(async function () {
+    // deploy our fundme contract
+    // using hardhat deploy
+    // const accounts = await ethers.getSigners()
+    deployer = await ethers.provider.getSigner();
+    funder = (await getNamedAccounts()).deployer;
+
+    await deployments.fixture(["all"]); // deploy with tags
+    fundMe = await ethers.getContractAt(
+      "FundMe",
+      (
+        await deployments.get("FundMe")
+      ).address,
+      deployer
+    ); // most recently deployed fundme contract
+    mockV3Aggregator = await ethers.getContractAt(
+      "MockV3Aggregator",
+      (
+        await deployments.get("MockV3Aggregator")
+      ).address,
+      deployer
+    );
   });
 
-  describe("constructor", async function () {
+  describe("constructor", () => {
     it("sets the aggregator addresses correctly", async function () {
-      const response = await fundMe.priceFeed();
-      assert.equal(response, mockV3Aggregator);
+      const response = await fundMe.getPriceFeed();
+      assert.equal(response, await mockV3Aggregator.getAddress());
+    });
+  });
+
+  describe("fund", async function () {
+    it("Fails if you dont send enough eth", async function () {
+      await expect(fundMe.fund()).to.be.revertedWith("Didnot send enough");
+    });
+
+    it("updated the amount funded data structure", async function () {
+      await fundMe.fund({ value: sendValue });
+      const response = await fundMe.addrToAmt(deployer);
+      assert.equal(response.toString(), sendValue.toString());
+    });
+
+    it("adds funder to array of funders", async function () {
+      await fundMe.fund({ value: sendValue });
+      const response = await fundMe.funders(0);
+      assert.equal(response, funder);
     });
   });
 });

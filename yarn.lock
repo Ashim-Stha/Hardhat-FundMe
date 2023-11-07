@@ -756,6 +756,11 @@
     "@nomicfoundation/solidity-analyzer-win32-ia32-msvc" "0.1.1"
     "@nomicfoundation/solidity-analyzer-win32-x64-msvc" "0.1.1"
 
+"@nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/hardhat-deploy-ethers/-/hardhat-deploy-ethers-0.4.1.tgz#dd70b0cc413ed99e98994047b383a004cf1c14f8"
+  integrity sha512-RM6JUcD0dOCjemxnKLtK7XQQI7NWn+LxF5qicGYax0PtWayEUXAewOb4WIHZ/yearhj+s2t6dL0MnHyLTENwJg==
+
 "@openzeppelin/contracts-upgradeable-4.7.3@npm:@openzeppelin/contracts-upgradeable@v4.7.3":
   version "4.7.3"
   resolved "https://registry.npmjs.org/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.7.3.tgz"
@@ -1951,7 +1956,7 @@ ethers@^5.7.0, ethers@^5.7.1, ethers@^5.7.2:
 
 ethers@^6.8.1:
   version "6.8.1"
-  resolved "https://registry.npmjs.org/ethers/-/ethers-6.8.1.tgz"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.8.1.tgz#ee2a1a39b5f62a13678f90ccd879175391d0a2b4"
   integrity sha512-iEKm6zox5h1lDn6scuRWdIdFJUCGg3+/aQWu0F4K0GVyEZiktFkqrJbRjTn1FlYEPz7RKA707D6g5Kdk6j7Ljg==
   dependencies:
     "@adraffy/ens-normalize" "1.10.0"
@@ -2346,10 +2351,10 @@ hardhat-gas-reporter@^1.0.8:
     eth-gas-reporter "^0.2.25"
     sha1 "^1.1.1"
 
-hardhat@^2.18.3:
-  version "2.18.3"
-  resolved "https://registry.npmjs.org/hardhat/-/hardhat-2.18.3.tgz"
-  integrity sha512-JuYaTG+4ZHVjEHCW5Hn6jCHH3LpO75dtgznZpM/dLv12RcSlw/xHbeQh3FAsGahQr1epKryZcZEMHvztVZHe0g==
+hardhat@^2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.19.0.tgz#1e08658863550ba351788ea128e544ff80584a31"
+  integrity sha512-kMpwovOEfrFRQXEopCP+JTcKVwSYVj8rnXE0LynxDqnh06yvyKCQknmXL6IVYTHQL6Csysc/yNbCHQbjSeJGpA==
   dependencies:
     "@ethersproject/abi" "^5.1.2"
     "@metamask/eth-sig-util" "^4.0.0"

@@ -22,7 +22,7 @@ contract FundMe {
 
     address public immutable owner;
 
-    AggregatorV3Interface public priceFeed;
+    AggregatorV3Interface priceFeed;
 
     constructor(address priceFeedAddr) {
         owner = msg.sender;
@@ -75,6 +75,10 @@ contract FundMe {
         (bool callSuccess, bytes memory dataReturned) = payable(msg.sender)
             .call{value: address(this).balance}("");
         require(callSuccess, "Send failed");
+    }
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
+        return priceFeed;
     }
 
     //what happens if someone send eth without using fund function
