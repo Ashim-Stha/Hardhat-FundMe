@@ -44,13 +44,13 @@ describe("FundMe", () => {
 
     it("updated the amount funded data structure", async function () {
       await fundMe.fund({ value: sendValue });
-      const response = await fundMe.addrToAmt(deployer);
+      const response = await fundMe.s_addrToAmt(deployer);
       assert.equal(response.toString(), sendValue.toString());
     });
 
     it("adds funder to array of funders", async function () {
       await fundMe.fund({ value: sendValue });
-      const response = await fundMe.funders(0);
+      const response = await fundMe.s_funders(0);
       assert.equal(response, funder);
     });
   });
@@ -71,7 +71,7 @@ describe("FundMe", () => {
 
       const transactionResponse = await fundMe.withdraw();
       const transactionReceipt = await transactionResponse.wait(1);
-      console.log(transactionReceipt);
+
       const { gasUsed, gasPrice } = transactionReceipt;
       const gasCost = gasUsed * gasPrice; //bigNumber
 
@@ -119,10 +119,10 @@ describe("FundMe", () => {
         (endingDeployerBalance + gasCost).toString()
       );
 
-      await expect(fundMe.funders(0)).to.be.reverted;
+      await expect(fundMe.s_funders(0)).to.be.reverted;
 
       for (let i = 1; i < 6; i++) {
-        assert.equal(await fundMe.addrToAmt(accounts[i].address), 0);
+        assert.equal(await fundMe.s_addrToAmt(accounts[i].address), 0);
       }
     });
 
@@ -130,7 +130,7 @@ describe("FundMe", () => {
       const accounts = await ethers.getSigners();
       const attacker = accounts[1];
       const attackerConnectedContract = await fundMe.connect(attacker);
-      await expect(attackerConnectedContract.withdraw()).to.be.reverted;
+      await expect(attackerConnectedContract.withdraw()).to.be.revertedWith;
     });
   });
 });

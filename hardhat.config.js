@@ -1,6 +1,7 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-deploy");
 require("dotenv").config();
+require("hardhat-gas-reporter");
 
 const surl = process.env.RPC_URL_ALCHEMY || "https://eth-sepolia";
 const pkey = process.env.PRIVATE_KEY || "0xkey";
@@ -31,10 +32,10 @@ module.exports = {
     apiKey: api,
   },
   gasReporter: {
-    enabled: false,
+    enabled: true,
     noColors: true,
     outputFile: "gas-report.txt",
     currency: "USD",
-    coinmarketcap: COINMARKETCAP_API,
+    // coinmarketcap: COINMARKETCAP_API,
   },
 };

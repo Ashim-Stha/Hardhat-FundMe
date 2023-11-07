@@ -14,52 +14,52 @@ contract FundMe {
     //800392 when constant used
     //800392 when both constant and immutable used
 
-    uint256 public constant minUSD = 50 * 1e18;
+    uint256 public constant MINUSD = 50 * 1e18;
     //use 50/current usd price for 1 eth ;then to WEI
 
-    address[] public funders;
-    mapping(address => uint256) public addrToAmt;
+    address[] public s_funders;
+    mapping(address => uint256) public s_addrToAmt;
 
-    address public immutable owner;
+    address public immutable i_owner;
 
-    AggregatorV3Interface priceFeed;
+    AggregatorV3Interface s_priceFeed;
 
-    constructor(address priceFeedAddr) {
-        owner = msg.sender;
-        priceFeed = AggregatorV3Interface(priceFeedAddr);
+    constructor(address s_priceFeedAddr) {
+        i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(s_priceFeedAddr);
     }
 
     function fund() public payable {
         require(
-            msg.value.getConversionRate(priceFeed) > minUSD,
+            msg.value.getConversionRate(s_priceFeed) > MINUSD,
             "Didnot send enough"
         );
         //msg.value is send as 1st parameter to getConversionRate()
         //if 2nd param present send inside bracket
 
-        funders.push(msg.sender);
-        addrToAmt[msg.sender] = msg.value;
+        s_funders.push(msg.sender);
+        s_addrToAmt[msg.sender] = msg.value;
     }
 
-    modifier onlyOwner() {
-        // require(msg.sender==owner,"Sender is not owner");
-        if (msg.sender != owner) {
+    modifier onlyi_owner() {
+        // require(msg.sender==i_owner,"Sender is not i_owner");
+        if (msg.sender != i_owner) {
             revert FundMe__NotOwner();
         }
         _; //rest of the code
     }
 
-    function withdraw() public onlyOwner {
-        //to allow only owner to withdraw fund
-        // require(msg.sender==owner,"Sender is not owner");
+    function withdraw() public onlyi_owner {
+        //to allow only i_owner to withdraw fund
+        // require(msg.sender==i_owner,"Sender is not owner");
 
-        for (uint256 i = 0; i < funders.length; i++) {
-            address addr = funders[i];
-            addrToAmt[addr] = 0;
+        for (uint256 i = 0; i < s_funders.length; i++) {
+            address addr = s_funders[i];
+            s_addrToAmt[addr] = 0;
         }
 
-        //to reset the funders array
-        funders = new address[](0); //represents 0 element
+        //to reset the s_funders array
+        s_funders = new address[](0); //represents 0 element
 
         //3 ways to transfer eth
 
@@ -78,7 +78,7 @@ contract FundMe {
     }
 
     function getPriceFeed() public view returns (AggregatorV3Interface) {
-        return priceFeed;
+        return s_priceFeed;
     }
 
     //what happens if someone send eth without using fund function
