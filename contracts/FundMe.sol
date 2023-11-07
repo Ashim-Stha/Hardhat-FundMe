@@ -61,20 +61,25 @@ contract FundMe {
         //to reset the s_funders array
         s_funders = new address[](0); //represents 0 element
 
-        //3 ways to transfer eth
-
-        //     //transfer;address ie msg.sender to payable address;if failed reverts
-        //     payable (msg.sender).transfer(address(this).balance);
-        //    }
-
-        //    //send; if fails returns bool value
-        //    bool success = payable (msg.sender).send(address(this).balance);
-        //    require(success,"Send failed");
-
-        //call
-        (bool callSuccess, bytes memory dataReturned) = payable(msg.sender)
-            .call{value: address(this).balance}("");
+        (bool callSuccess, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
         require(callSuccess, "Send failed");
+    }
+
+    function cheaperWithdraw() public payable onlyi_owner {
+        //reading and storing to/from storage cost way more gas
+        address[] memory funders = s_funders; //memory is way cheaper than storage
+
+        for (uint256 i = 0; i < funders.length; i++) {
+            address addr = funders[i];
+            //mappings cant be in memory
+            s_addrToAmt[addr] = 0;
+        }
+
+        s_funders = new address[](0);
+        (bool success, ) = i_owner.call{value: address(this).balance}("");
+        require(success);
     }
 
     function getPriceFeed() public view returns (AggregatorV3Interface) {

@@ -132,5 +132,71 @@ describe("FundMe", () => {
       const attackerConnectedContract = await fundMe.connect(attacker);
       await expect(attackerConnectedContract.withdraw()).to.be.revertedWith;
     });
+
+    it(" cheaper withdraw eth from a single founder", async function () {
+      const startingFundMeBalance = await ethers.provider.getBalance(
+        fundMe.target
+      );
+
+      const startingDeployerBalance = await ethers.provider.getBalance(
+        deployer
+      );
+
+      const transactionResponse = await fundMe.cheaperWithdraw();
+      const transactionReceipt = await transactionResponse.wait(1);
+
+      const { gasUsed, gasPrice } = transactionReceipt;
+      const gasCost = gasUsed * gasPrice; //bigNumber
+
+      const endingFundMeBalance = await ethers.provider.getBalance(
+        fundMe.target
+      );
+
+      const endingDeployerBalance = await ethers.provider.getBalance(deployer);
+
+      assert.equal(endingFundMeBalance, 0);
+      assert.equal(
+        (startingFundMeBalance + startingDeployerBalance).toString(), //bigNumber
+        (endingDeployerBalance + gasCost).toString()
+      );
+    });
+
+    it("cheaper withdraw for multiple funders", async function () {
+      const accounts = await ethers.getSigners();
+      for (let i = 1; i < 6; i++) {
+        const fundMeConnectedContract = await fundMe.connect(accounts[i]);
+        await fundMeConnectedContract.fund({ value: sendValue });
+      }
+
+      const startingFundMeBalance = await ethers.provider.getBalance(
+        fundMe.target
+      );
+
+      const startingDeployerBalance = await ethers.provider.getBalance(
+        deployer
+      );
+
+      const transactionResponse = await fundMe.cheaperWithdraw();
+      const transactionReceipt = await transactionResponse.wait(1);
+      const { gasUsed, gasPrice } = transactionReceipt;
+      const gasCost = gasUsed * gasPrice;
+
+      const endingFundMeBalance = await ethers.provider.getBalance(
+        fundMe.target
+      );
+      const endingDeployerBalance = await ethers.provider.getBalance(deployer);
+
+      assert.equal(endingFundMeBalance, 0);
+      assert.equal(
+        (startingDeployerBalance + startingFundMeBalance).toString(),
+        (endingDeployerBalance + gasCost).toString()
+      );
+
+      await expect(fundMe.s_funders(0)).to.be.reverted;
+
+      for (let i = 1; i < 6; i++) {
+        assert.equal(await fundMe.s_addrToAmt(accounts[i].address), 0);
+      }
+    });
   });
 });
