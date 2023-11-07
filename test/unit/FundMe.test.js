@@ -44,13 +44,13 @@ describe("FundMe", () => {
 
     it("updated the amount funded data structure", async function () {
       await fundMe.fund({ value: sendValue });
-      const response = await fundMe.s_addrToAmt(deployer);
+      const response = await fundMe.getAddrToAmt(deployer);
       assert.equal(response.toString(), sendValue.toString());
     });
 
     it("adds funder to array of funders", async function () {
       await fundMe.fund({ value: sendValue });
-      const response = await fundMe.s_funders(0);
+      const response = await fundMe.getFunder(0);
       assert.equal(response, funder);
     });
   });
@@ -119,10 +119,10 @@ describe("FundMe", () => {
         (endingDeployerBalance + gasCost).toString()
       );
 
-      await expect(fundMe.s_funders(0)).to.be.reverted;
+      await expect(fundMe.getFunder(0)).to.be.reverted;
 
       for (let i = 1; i < 6; i++) {
-        assert.equal(await fundMe.s_addrToAmt(accounts[i].address), 0);
+        assert.equal(await fundMe.getAddrToAmt(accounts[i].address), 0);
       }
     });
 
@@ -192,10 +192,10 @@ describe("FundMe", () => {
         (endingDeployerBalance + gasCost).toString()
       );
 
-      await expect(fundMe.s_funders(0)).to.be.reverted;
+      await expect(fundMe.getFunder(0)).to.be.reverted;
 
       for (let i = 1; i < 6; i++) {
-        assert.equal(await fundMe.s_addrToAmt(accounts[i].address), 0);
+        assert.equal(await fundMe.getAddrToAmt(accounts[i].address), 0);
       }
     });
   });

@@ -17,12 +17,12 @@ contract FundMe {
     uint256 public constant MINUSD = 50 * 1e18;
     //use 50/current usd price for 1 eth ;then to WEI
 
-    address[] public s_funders;
-    mapping(address => uint256) public s_addrToAmt;
+    address[] private s_funders;
+    mapping(address => uint256) private s_addrToAmt;
 
-    address public immutable i_owner;
+    address private immutable i_owner;
 
-    AggregatorV3Interface s_priceFeed;
+    AggregatorV3Interface private s_priceFeed;
 
     constructor(address s_priceFeedAddr) {
         i_owner = msg.sender;
@@ -84,6 +84,18 @@ contract FundMe {
 
     function getPriceFeed() public view returns (AggregatorV3Interface) {
         return s_priceFeed;
+    }
+
+    function getOwner() public view returns (address) {
+        return i_owner;
+    }
+
+    function getFunder(uint256 index) public view returns (address) {
+        return s_funders[index];
+    }
+
+    function getAddrToAmt(address funder) public view returns (uint256) {
+        return s_addrToAmt[funder];
     }
 
     //what happens if someone send eth without using fund function
