@@ -1,4 +1,5 @@
 const { assert, expect } = require("chai");
+
 const { ethers, getNamedAccounts } = require("hardhat");
 
 describe("FundMe", () => {
@@ -70,6 +71,7 @@ describe("FundMe", () => {
 
       const transactionResponse = await fundMe.withdraw();
       const transactionReceipt = await transactionResponse.wait(1);
+      console.log(transactionReceipt);
       const { gasUsed, gasPrice } = transactionReceipt;
       const gasCost = gasUsed * gasPrice; //bigNumber
 
@@ -84,6 +86,44 @@ describe("FundMe", () => {
         (startingFundMeBalance + startingDeployerBalance).toString(), //bigNumber
         (endingDeployerBalance + gasCost).toString()
       );
+    });
+
+    it("allows to withdraw with multiple funders", async function () {
+      const accounts = await ethers.getSigners();
+      for (let i = 1; i < 6; i++) {
+        const fundMeConnectedContract = await fundMe.connect(accounts[i]);
+        await fundMeConnectedContract.fund({ value: sendValue });
+      }
+
+      const startingFundMeBalance = await ethers.provider.getBalance(
+        fundMe.target
+      );
+
+      const startingDeployerBalance = await ethers.provider.getBalance(
+        deployer
+      );
+
+      const transactionResponse = await fundMe.withdraw();
+      const transactionReceipt = await transactionResponse.wait(1);
+      const { gasUsed, gasPrice } = transactionReceipt;
+      const gasCost = gasUsed * gasPrice;
+
+      const endingFundMeBalance = await ethers.provider.getBalance(
+        fundMe.target
+      );
+      const endingDeployerBalance = await ethers.provider.getBalance(deployer);
+
+      assert.equal(endingFundMeBalance, 0);
+      assert.equal(
+        (startingDeployerBalance + startingFundMeBalance).toString(),
+        (endingDeployerBalance + gasCost).toString()
+      );
+
+      await expect(fundMe.funders(0)).to.be.reverted;
+
+      for (let i = 1; i < 6; i++) {
+        assert.equal(await fundMe.addrToAmt(accounts[i].address), 0);
+      }
     });
   });
 });
