@@ -14,7 +14,7 @@ contract FundMe {
     //800392 when constant used
     //800392 when both constant and immutable used
 
-    uint256 public constant MINUSD = 50 * 1e18;
+    uint256 public constant MINUSD = 5 * 10 ** 18;
     //use 50/current usd price for 1 eth ;then to WEI
 
     address[] private s_funders;
@@ -31,7 +31,7 @@ contract FundMe {
 
     function fund() public payable {
         require(
-            msg.value.getConversionRate(s_priceFeed) > MINUSD,
+            msg.value.getConversionRate(s_priceFeed) >= MINUSD,
             "Didnot send enough"
         );
         //msg.value is send as 1st parameter to getConversionRate()
